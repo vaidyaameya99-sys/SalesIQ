@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SalesIQ — How to Deploy</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 40px 20px; }
+  .container { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 2rem; font-weight: 800; color: #38bdf8; margin-bottom: 6px; }
+  .subtitle { color: #94a3b8; margin-bottom: 40px; font-size: 1rem; }
+  .overview { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 40px; }
+  .box { background: #1e293b; border-radius: 12px; padding: 20px 24px; border: 1px solid #334155; }
+  .box-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #64748b; margin-bottom: 6px; }
+  .box-title { font-size: 1.15rem; font-weight: 700; color: #f8fafc; margin-bottom: 4px; }
+  .box-desc { font-size: 0.85rem; color: #94a3b8; }
+  .tag { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-top: 8px; }
+  .tag-green { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+  .tag-blue  { background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); }
+  .arrow { display: flex; align-items: center; justify-content: center; color: #475569; font-size: 1.4rem; }
+
+  .phase { margin-bottom: 36px; }
+  .phase-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .phase-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.95rem; flex-shrink: 0; }
+  .phase-1 .phase-num { background: rgba(56,189,248,0.2); color: #38bdf8; border: 2px solid #38bdf8; }
+  .phase-2 .phase-num { background: rgba(34,197,94,0.2); color: #4ade80; border: 2px solid #4ade80; }
+  .phase-3 .phase-num { background: rgba(168,85,247,0.2); color: #c084fc; border: 2px solid #c084fc; }
+  .phase-4 .phase-num { background: rgba(251,191,36,0.2); color: #fbbf24; border: 2px solid #fbbf24; }
+  .phase-title { font-size: 1.2rem; font-weight: 700; color: #f8fafc; }
+  .phase-sub   { font-size: 0.85rem; color: #64748b; margin-top: 2px; }
+
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step { background: #1e293b; border-radius: 10px; border: 1px solid #334155; overflow: hidden; }
+  .step-head { display: flex; align-items: flex-start; gap: 14px; padding: 16px 20px; }
+  .step-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .si-blue   { background: rgba(56,189,248,0.2); color: #38bdf8; }
+  .si-green  { background: rgba(34,197,94,0.2);  color: #4ade80; }
+  .si-purple { background: rgba(168,85,247,0.2); color: #c084fc; }
+  .si-yellow { background: rgba(251,191,36,0.2); color: #fbbf24; }
+  .step-text { flex: 1; }
+  .step-text strong { display: block; color: #f8fafc; font-size: 0.95rem; margin-bottom: 4px; }
+  .step-text p { color: #94a3b8; font-size: 0.85rem; line-height: 1.5; }
+  .code-block { background: #0f172a; border-top: 1px solid #334155; padding: 12px 20px; font-family: 'Courier New', monospace; font-size: 0.82rem; color: #7dd3fc; white-space: pre; }
+  .note { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); border-radius: 8px; padding: 12px 16px; font-size: 0.85rem; color: #fcd34d; margin-top: 8px; }
+  .note strong { color: #fbbf24; }
+  .success { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.25); border-radius: 12px; padding: 24px; text-align: center; margin-top: 16px; }
+  .success h3 { color: #4ade80; font-size: 1.3rem; margin-bottom: 8px; }
+  .success p  { color: #94a3b8; font-size: 0.9rem; }
+  .divider { border: none; border-top: 1px solid #1e293b; margin: 8px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🚀 SalesIQ — Deployment Guide</h1>
+  <p class="subtitle">Follow these steps to get a live URL. Total time: ~10 minutes.</p>
+
+  <!-- Overview -->
+  <div class="overview">
+    <div class="box">
+      <div class="box-label">Step 1 → 2</div>
+      <div class="box-title">Backend → Render.com</div>
+      <div class="box-desc">Python + FastAPI + Database<br>Handles AI analysis, file uploads</div>
+      <span class="tag tag-blue">Free tier available</span>
+    </div>
+    <div class="box">
+      <div class="box-label">Step 3 → 4</div>
+      <div class="box-title">Frontend → Vercel</div>
+      <div class="box-desc">React + Vite UI<br>You already have an account ✓</div>
+      <span class="tag tag-green">Free tier available</span>
+    </div>
+  </div>
+
+  <!-- PHASE 1: GitHub -->
+  <div class="phase phase-1">
+    <div class="phase-header">
+      <div class="phase-num">1</div>
+      <div>
+        <div class="phase-title">Push code to GitHub</div>
+        <div class="phase-sub">One-time setup — takes 2 minutes</div>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-blue">1</div>
+          <div class="step-text">
+            <strong>Create a new repository on GitHub</strong>
+            <p>Go to github.com → click the green "New" button → name it <em>salesiq</em> → click "Create repository"</p>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-blue">2</div>
+          <div class="step-text">
+            <strong>Open a terminal in the ai-sales-agent folder and run:</strong>
+          </div>
+        </div>
+        <div class="code-block">git init
+git add .
+git commit -m "Initial SalesIQ commit"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/salesiq.git
+git push -u origin main</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2: Render -->
+  <div class="phase phase-2">
+    <div class="phase-header">
+      <div class="phase-num">2</div>
+      <div>
+        <div class="phase-title">Deploy Backend to Render.com</div>
+        <div class="phase-sub">This gives you the API URL that Vercel will talk to</div>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-green">1</div>
+          <div class="step-text">
+            <strong>Create a free account at render.com</strong>
+            <p>Sign up at <strong>render.com</strong> → choose "Sign up with GitHub" (easiest)</p>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-green">2</div>
+          <div class="step-text">
+            <strong>Create a new Web Service</strong>
+            <p>Click <strong>New +</strong> → <strong>Web Service</strong> → Connect your GitHub → choose the <em>salesiq</em> repo</p>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-green">3</div>
+          <div class="step-text">
+            <strong>Fill in these settings on the Render form:</strong>
+          </div>
+        </div>
+        <div class="code-block">Name:            salesiq-backend
+Runtime:         Python 3
+Build Command:   pip install -r backend/requirements.txt
+Start Command:   uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+Plan:            Free</div>
+      </div>
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-green">4</div>
+          <div class="step-text">
+            <strong>Add Environment Variable</strong>
+            <p>Scroll down to <strong>Environment Variables</strong> → click "Add Variable"</p>
+          </div>
+        </div>
+        <div class="code-block">Key:    LLM_PROVIDER
+Value:  mock</div>
+        <div style="padding: 0 20px 16px;">
+          <div class="note"><strong>💡 Note:</strong> Using "mock" means the app works instantly without any OpenAI or Anthropic API keys. You can change this later to "openai" or "claude" when you're ready.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-green">5</div>
+          <div class="step-text">
+            <strong>Click "Create Web Service" and wait ~3 minutes</strong>
+            <p>Render will build and deploy. When done, you'll see a URL like:<br><strong>https://salesiq-backend.onrender.com</strong> — copy this URL, you'll need it next!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3: Vercel -->
+  <div class="phase phase-3">
+    <div class="phase-header">
+      <div class="phase-num">3</div>
+      <div>
+        <div class="phase-title">Deploy Frontend to Vercel</div>
+        <div class="phase-sub">You already have a Vercel account — this is fast</div>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-purple">1</div>
+          <div class="step-text">
+            <strong>Go to vercel.com → click "Add New Project"</strong>
+            <p>Import from GitHub → choose the <em>salesiq</em> repo</p>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-purple">2</div>
+          <div class="step-text">
+            <strong>Vercel will auto-detect the settings from vercel.json</strong>
+            <p>You should see: Build Command = <em>cd frontend &amp;&amp; npm install &amp;&amp; npm run build</em></p>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-purple">3</div>
+          <div class="step-text">
+            <strong>Add Environment Variable (IMPORTANT)</strong>
+            <p>Before clicking Deploy, go to <strong>Environment Variables</strong> section and add:</p>
+          </div>
+        </div>
+        <div class="code-block">Name:   VITE_API_URL
+Value:  https://salesiq-backend.onrender.com   ← (paste your Render URL from Step 2)</div>
+      </div>
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-purple">4</div>
+          <div class="step-text">
+            <strong>Click "Deploy" and wait ~2 minutes</strong>
+            <p>Vercel builds the React app. When done, you get a live URL like:<br><strong>https://salesiq.vercel.app</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 4: Done -->
+  <div class="phase phase-4">
+    <div class="phase-header">
+      <div class="phase-num">4</div>
+      <div>
+        <div class="phase-title">Test Your Live App</div>
+        <div class="phase-sub">Visit your Vercel URL and try the demo</div>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-yellow">✓</div>
+          <div class="step-text">
+            <strong>Open your Vercel URL in a browser</strong>
+            <p>You should see the SalesIQ dashboard.</p>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-yellow">✓</div>
+          <div class="step-text">
+            <strong>Upload a test audio/video file</strong>
+            <p>Since LLM_PROVIDER=mock, it will instantly analyze the call with demo data — no real transcription needed.</p>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-head">
+          <div class="step-icon si-yellow">✓</div>
+          <div class="step-text">
+            <strong>Watch the real-time pipeline run</strong>
+            <p>You'll see the 7-step pipeline progress bar live via WebSocket.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="success">
+      <h3>🎉 Your SalesIQ app is live!</h3>
+      <p>Share the Vercel URL with Dan for a demo.<br>When ready for real AI analysis, set <strong>LLM_PROVIDER=openai</strong> and add your <strong>OPENAI_API_KEY</strong> in the Render dashboard.</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SalesIQ — AI Sales Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0a0f1a;
+    --card:     #151f38;
+    --border:   #1c2947;
+    --teal:     #00b3b3;
+    --cyan:     #00d4ff;
+    --green:    #10b981;
+    --red:      #ef4444;
+    --amber:    #f59e0b;
+    --violet:   #8b5cf6;
+    --white:    #ffffff;
+    --gray:     #94a3b8;
+    --lgray:    #64748b;
+    --dark2:    #0f1729;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    color: var(--white);
+  }
+
+  /* ── DECK WRAPPER ── */
+  .deck {
+    width: 100vw; height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── SLIDES ── */
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 52px 72px 72px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(60px);
+    transition: opacity .45s cubic-bezier(.4,0,.2,1), transform .45s cubic-bezier(.4,0,.2,1);
+    will-change: opacity, transform;
+    background: var(--bg);
+    overflow: hidden;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+    z-index: 2;
+  }
+  .slide.exit {
+    opacity: 0;
+    transform: translateX(-60px);
+    z-index: 1;
+  }
+
+  /* Grid background */
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.035) 1px, transparent 0);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  /* ── TOP ACCENT BAR ── */
+  .accent-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--teal);
+  }
+  .accent-bar.violet { background: var(--violet); }
+  .accent-bar.red    { background: var(--red); }
+  .accent-bar.green  { background: var(--green); }
+  .accent-bar.cyan   { background: var(--cyan); }
+  .accent-bar.amber  { background: var(--amber); }
+
+  /* ── TYPOGRAPHY ── */
+  .label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 10px;
+  }
+  .label.violet { color: var(--violet); }
+  .label.red    { color: var(--red); }
+  .label.green  { color: var(--green); }
+  .label.cyan   { color: var(--cyan); }
+  .label.amber  { color: var(--amber); }
+
+  h1 { font-size: clamp(28px,3.8vw,52px); font-weight: 900; line-height: 1.1; }
+  h2 { font-size: clamp(22px,2.8vw,38px); font-weight: 800; line-height: 1.2; }
+  h3 { font-size: 15px; font-weight: 700; }
+
+  .sub {
+    font-size: clamp(12px,1.1vw,15px);
+    color: var(--gray);
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+  }
+  .card.glow { box-shadow: 0 0 0 1px rgba(0,212,255,.12), 0 8px 32px rgba(0,0,0,.4); }
+
+  /* ── GRID LAYOUTS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+
+  /* ── BADGE ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 6px;
+    font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  }
+  .badge.cyan   { background: rgba(0,212,255,.12); color: var(--cyan);   border: 1px solid rgba(0,212,255,.25); }
+  .badge.green  { background: rgba(16,185,129,.12); color: var(--green);  border: 1px solid rgba(16,185,129,.25); }
+  .badge.red    { background: rgba(239,68,68,.12);  color: var(--red);    border: 1px solid rgba(239,68,68,.25); }
+  .badge.amber  { background: rgba(245,158,11,.12); color: var(--amber);  border: 1px solid rgba(245,158,11,.25); }
+  .badge.violet { background: rgba(139,92,246,.12); color: var(--violet); border: 1px solid rgba(139,92,246,.25); }
+
+  /* ── LEFT BORDER CARDS ── */
+  .border-card {
+    border-radius: 10px;
+    padding: 14px 16px;
+    border-left: 3px solid;
+    background: rgba(255,255,255,.03);
+  }
+
+  /* ── PROGRESS BAR ── */
+  .prog-wrap { background: rgba(255,255,255,.06); border-radius: 99px; overflow: hidden; height: 6px; }
+  .prog-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--teal), var(--cyan)); }
+
+  /* ── MONO TEXT ── */
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ── GLOW ORBS ── */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+    opacity: .35;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+  @keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(0,212,255,.4); }
+    70%  { box-shadow: 0 0 0 12px rgba(0,212,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,212,255,0); }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes count-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes bar-grow {
+    from { width: 0; }
+  }
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-float    { animation: float 4s ease-in-out infinite; }
+  .animate-pulse    { animation: pulse-ring 2s ease-in-out infinite; }
+  .animate-spin     { animation: spin 2s linear infinite; }
+
+  .slide.active .fade-up {
+    animation: fade-in-up .5s ease both;
+  }
+  .slide.active .fade-up:nth-child(1) { animation-delay: .05s; }
+  .slide.active .fade-up:nth-child(2) { animation-delay: .12s; }
+  .slide.active .fade-up:nth-child(3) { animation-delay: .19s; }
+  .slide.active .fade-up:nth-child(4) { animation-delay: .26s; }
+  .slide.active .fade-up:nth-child(5) { animation-delay: .33s; }
+  .slide.active .fade-up:nth-child(6) { animation-delay: .40s; }
+  .slide.active .fade-up:nth-child(7) { animation-delay: .47s; }
+
+  .slide.active .bar-anim .prog-fill {
+    animation: bar-grow .8s .3s ease both;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    position: fixed;
+    bottom: 28px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; align-items: center; gap: 16px;
+    z-index: 100;
+    background: rgba(15,23,41,.85);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 10px 20px;
+  }
+  .nav-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--white);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    transition: all .2s;
+  }
+  .nav-btn:hover { background: var(--teal); border-color: var(--teal); color: var(--bg); }
+  .nav-btn:disabled { opacity: .3; cursor: default; }
+  .nav-btn:disabled:hover { background: var(--card); border-color: var(--border); color: var(--white); }
+
+  .slide-counter {
+    font-size: 12px; font-weight: 600;
+    color: var(--gray); min-width: 52px; text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dots {
+    display: flex; gap: 6px;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .dot.active {
+    background: var(--cyan);
+    width: 18px; border-radius: 99px;
+  }
+
+  /* ── SLIDE 1 — TITLE ── */
+  #s1 .hero-glow {
+    position: absolute;
+    top: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 700px; height: 500px;
+    background: radial-gradient(ellipse, rgba(0,179,179,.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  #s1 .brand {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 40px;
+  }
+  #s1 .brand-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--teal), var(--cyan));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; animation: float 4s ease-in-out infinite;
+  }
+  #s1 .brand-name {
+    font-size: 22px; font-weight: 800;
+  }
+  #s1 .brand-name span { color: var(--cyan); }
+  #s1 .tagline {
+    font-size: clamp(11px,1vw,14px);
+    color: var(--cyan); background: rgba(0,212,255,.08);
+    border: 1px solid rgba(0,212,255,.2);
+    border-radius: 99px;
+    padding: 4px 14px;
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-bottom: 18px;
+  }
+  #s1 .main-title { margin-bottom: 6px; }
+  #s1 .main-title span { color: var(--cyan); }
+  #s1 .stats {
+    display: flex; gap: 16px; margin-top: 32px;
+  }
+  #s1 .stat-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 22px; text-align: center;
+    min-width: 130px;
+  }
+  #s1 .stat-num { font-size: 28px; font-weight: 900; color: var(--cyan); }
+  #s1 .stat-lbl { font-size: 11px; color: var(--gray); margin-top: 2px; }
+  #s1 .right-panel {
+    position: absolute; right: 72px; top: 50%;
+    transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 10px;
+    width: 320px;
+  }
+  #s1 .mini-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 16px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 12px;
+  }
+  #s1 .mini-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0;
+  }
+
+  /* ── SLIDE 2 — PROBLEM ── */
+  #s2 .problem-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; margin-top: 24px; flex: 1;
+  }
+  #s2 .p-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-left: 3px solid var(--red);
+    border-radius: 12px; padding: 22px 20px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  #s2 .p-icon { font-size: 26px; }
+  #s2 .p-title { font-size: 14px; font-weight: 700; }
+  #s2 .p-desc  { font-size: 12px; color: var(--gray); line-height: 1.6; }
+
+  /* ── SLIDE 3 — SOLUTION ── */
+  #s3 .steps {
+    display: flex; gap: 0; margin-top: 28px; flex: 1;
+    align-items: flex-start;
+  }
+  #s3 .step {
+    flex: 1;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 16px;
+    position: relative;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  #s3 .step::after {
+    content: '→';
+    position: absolute; right: -20px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--lgray); font-size: 18px; z-index: 1;
+  }
+  #s3 .step:last-child::after { display: none; }
+  #s3 .step-num {
+    font-size: 30px; font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
+  #s3 .step-bar {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; border-radius: 12px 12px 0 0;
+  }
+  #s3 .step-label { font-size: 13px; font-weight: 700; }
+  #s3 .step-desc  { font-size: 11px; color: var(--gray); line-height: 1.5; }
+  #s3 .bottom-quote {
+    margin-top: 16px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 22px;
+    font-size: 13px; color: var(--cyan); font-style: italic; text-align: center;
+  }
+
+  /* ── SLIDE 4 — PIPELINE ── */
+  #s4 .pipeline-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin-top: 20px; flex: 1;
+  }
+  #s4 .pipe-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px;
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  #s4 .pipe-num {
+    font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+    color: var(--lgray); background: rgba(255,255,255,.05);
+    border-radius: 6px; padding: 3px 8px;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  #s4 .pipe-info h3 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  #s4 .pipe-info p  { font-size: 11px; color: var(--gray); line-height: 1.5; }
+  #s4 .pipe-tag {
+    font-size: 9px; font-weight: 700; letter-spacing: .08em;
+    padding: 2px 7px; border-radius: 4px; margin-bottom: 5px; display: inline-block;
+  }
+  #s4 .tag-llm      { background: rgba(0,212,255,.12); color: var(--cyan); }
+  #s4 .tag-service  { background: rgba(245,158,11,.12); color: var(--amber); }
+  #s4 .tag-tool     { background: rgba(139,92,246,.12); color: var(--violet); }
+
+  /* ── SLIDE 5 — PROCESSING DEMO ── */
+  #s5 .agent-list { display: flex; flex-direction: column; gap: 8px; margin-top: 20px; flex: 1; }
+  #s5 .agent-row {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 18px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  #s5 .agent-row.running  { border-left: 3px solid var(--cyan); background: rgba(0,212,255,.04); }
+  #s5 .agent-row.done     { border-left: 3px solid var(--green); background: rgba(16,185,129,.04); }
+  #s5 .agent-row.waiting  { border-left: 3px solid var(--border); opacity: .6; }
+  #s5 .a-icon  { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+  #s5 .a-main  { flex: 1; }
+  #s5 .a-name  { font-size: 12px; font-weight: 700; }
+  #s5 .a-desc  { font-size: 10px; color: var(--gray); margin-top: 2px; }
+  #s5 .a-status { font-size: 10px; font-weight: 700; flex-shrink: 0; }
+  #s5 .spinner  { display: inline-block; animation: spin 1s linear infinite; }
+  #s5 .overall-bar { margin-top: 14px; }
+  #s5 .overall-bar .label-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 11px; color: var(--gray); }
+
+  /* ── SLIDE 6 — FAILURE ANALYSIS ── */
+  #s6 .failure-list { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; flex: 1; }
+  #s6 .f-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px;
+  }
+  #s6 .f-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  #s6 .f-ts { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--lgray); background: rgba(255,255,255,.05); padding: 2px 8px; border-radius: 5px; }
+  #s6 .f-cat { font-size: 11px; color: var(--lgray); margin-left: auto; }
+  #s6 .f-what { font-size: 12px; color: var(--white); margin-bottom: 8px; line-height: 1.5; }
+  #s6 .f-quote { font-size: 11px; color: var(--red); font-style: italic; padding: 8px 12px; background: rgba(239,68,68,.07); border-radius: 7px; border-left: 2px solid var(--red); margin-bottom: 8px; }
+  #s6 .f-coach { font-size: 11px; color: var(--green); padding: 8px 12px; background: rgba(16,185,129,.07); border-radius: 7px; border-left: 2px solid var(--green); line-height: 1.5; }
+  #s6 .f-coach strong { display: block; font-size: 10px; letter-spacing: .06em; margin-bottom: 3px; }
+
+  /* ── SLIDE 7 — BRIEFING ── */
+  #s7 .brief-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; flex: 1; }
+  #s7 .b-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; overflow: hidden; }
+  #s7 .b-title { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
+  #s7 .b-item { font-size: 11px; color: var(--gray); line-height: 1.6; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.05); display: flex; gap: 8px; }
+  #s7 .b-item:last-child { border-bottom: none; }
+  #s7 .b-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+  #s7 .b-obj { font-size: 11px; color: var(--amber); font-weight: 600; margin-bottom: 3px; }
+  #s7 .b-resp { font-size: 10px; color: var(--gray); line-height: 1.5; }
+  #s7 .b-quote { font-size: 11px; color: var(--gray); font-style: italic; padding-left: 10px; border-left: 2px solid rgba(255,255,255,.1); line-height: 1.6; margin-bottom: 8px; }
+
+  /* ── SLIDE 8 — TECH STACK ── */
+  #s8 .tech-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-top: 20px; flex: 1; }
+  #s8 .t-col { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; overflow: hidden; }
+  #s8 .t-header { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  #s8 .t-item { font-size: 11px; color: var(--gray); padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.04); line-height: 1.4; }
+  #s8 .t-item:last-child { border-bottom: none; }
+  #s8 .t-item::before { content: '·'; margin-right: 6px; }
+
+  /* ── SLIDE 9 — ARCHITECTURE ── */
+  #s9 .arch-wrap { flex: 1; margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+  #s9 .docker-box {
+    flex: 1;
+    border: 1.5px solid var(--teal);
+    border-radius: 14px; padding: 18px 22px;
+    position: relative;
+  }
+  #s9 .docker-label {
+    position: absolute; top: -11px; left: 18px;
+    background: var(--bg); padding: 0 10px;
+    font-size: 11px; font-weight: 700; color: var(--teal); letter-spacing: .06em;
+  }
+  #s9 .arch-row { display: flex; align-items: center; gap: 16px; height: 100%; }
+  #s9 .arch-box { background: var(--dark2); border: 1px solid; border-radius: 10px; padding: 14px 16px; flex: 1; }
+  #s9 .arch-arrow { font-size: 20px; color: var(--teal); flex-shrink: 0; text-align: center; }
+  #s9 .arch-box h3 { font-size: 12px; margin-bottom: 8px; }
+  #s9 .arch-box p { font-size: 10px; color: var(--gray); line-height: 1.6; }
+  #s9 .data-row { display: flex; gap: 12px; }
+  #s9 .data-box { flex: 1; background: var(--dark2); border: 1px solid; border-radius: 10px; padding: 12px 14px; text-align: center; }
+  #s9 .data-box h3 { font-size: 11px; margin-bottom: 4px; }
+  #s9 .data-box p  { font-size: 9px; color: var(--gray); }
+
+  /* ── SLIDE 10 — NEXT STEPS ── */
+  #s10 .ns-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 24px; flex: 1; }
+  #s10 .ns-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 20px; display: flex; gap: 16px; }
+  #s10 .ns-num  { font-size: 36px; font-weight: 900; line-height: 1; flex-shrink: 0; }
+  #s10 .ns-body h3 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  #s10 .ns-body p  { font-size: 12px; color: var(--gray); line-height: 1.6; }
+  #s10 .cta {
+    margin-top: 16px;
+    background: linear-gradient(90deg, rgba(0,179,179,.1), rgba(0,212,255,.1));
+    border: 1px solid rgba(0,212,255,.2);
+    border-radius: 10px; padding: 14px 22px;
+    text-align: center; font-size: 13px; font-weight: 600; color: var(--cyan);
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- ══════════ SLIDE 1 — TITLE ══════════ -->
+  <div class="slide active" id="s1">
+    <div class="accent-bar"></div>
+    <div class="hero-glow"></div>
+
+    <div class="brand fade-up">
+      <div class="brand-icon">⚡</div>
+      <div class="brand-name">Sales<span>IQ</span></div>
+    </div>
+
+    <div style="max-width:620px;">
+      <div class="tagline fade-up">⚡ AI-Powered Sales Intelligence</div>
+      <h1 class="main-title fade-up">Know exactly <span>where deals die</span><br>and how to revive them</h1>
+      <p class="sub fade-up">Upload any sales call recording. An AI-powered analysis pipeline processes the conversation, pinpoints every failure moment with timestamps, coaches the rep on exactly what to say differently, and generates a full pre-call briefing before the next attempt.</p>
+
+      <div class="stats fade-up">
+        <div class="stat-box">
+          <div class="stat-num" id="cnt1">0+</div>
+          <div class="stat-lbl">Calls Analyzed</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="cnt2">0+</div>
+          <div class="stat-lbl">Insights Generated</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="cnt3">0%</div>
+          <div class="stat-lbl">Rep Improvement Rate</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-panel fade-up">
+      <div class="mini-card">
+        <div class="mini-icon" style="background:rgba(0,212,255,.12);">🎙</div>
+        <div><div style="font-weight:600;font-size:12px;">Upload Call Recording</div><div style="font-size:10px;color:var(--gray)">Audio or transcript · Max 100MB</div></div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-icon" style="background:rgba(139,92,246,.12);">🧠</div>
+        <div><div style="font-weight:600;font-size:12px;">AI Pipeline Runs</div><div style="font-size:10px;color:var(--gray)">5 LLM modules · Real-time progress</div></div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-icon" style="background:rgba(239,68,68,.12);">🎯</div>
+        <div><div style="font-weight:600;font-size:12px;">Get Failure Diagnosis</div><div style="font-size:10px;color:var(--gray)">Exact timestamps · Root causes</div></div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-icon" style="background:rgba(16,185,129,.12);">💡</div>
+        <div><div style="font-weight:600;font-size:12px;">Receive Coaching</div><div style="font-size:10px;color:var(--gray)">Alternative phrasing · Why it works</div></div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-icon" style="background:rgba(245,158,11,.12);">📋</div>
+        <div><div style="font-weight:600;font-size:12px;">Pre-Call Briefing</div><div style="font-size:10px;color:var(--gray)">Triggers · Objections · Opening lines</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ SLIDE 2 — THE PROBLEM ══════════ -->
+  <div class="slide" id="s2">
+    <div class="accent-bar red"></div>
+    <div class="orb" style="background:var(--red);width:400px;height:400px;top:-150px;right:-100px;"></div>
+
+    <div class="label red fade-up">The Problem</div>
+    <h2 class="fade-up">Hundreds of recorded calls.<br><span style="color:var(--red)">Zero actionable insights.</span></h2>
+    <p class="sub fade-up">Sales teams are sitting on a goldmine of recorded conversations — but most of it goes to waste.</p>
+
+    <div class="problem-grid">
+      <div class="p-card fade-up">
+        <div class="p-icon">🕐</div>
+        <div class="p-title">No Time to Review</div>
+        <div class="p-desc">Hours of recordings sit unwatched. No one has the bandwidth to manually audit every call and extract lessons from them.</div>
+      </div>
+      <div class="p-card fade-up">
+        <div class="p-icon">🔄</div>
+        <div class="p-title">Same Mistakes Repeat</div>
+        <div class="p-desc">Reps re-approach the same prospects making identical errors — because there's no structured coaching between attempts.</div>
+      </div>
+      <div class="p-card fade-up">
+        <div class="p-icon">📊</div>
+        <div class="p-title">Gut-Feel Coaching</div>
+        <div class="p-desc">Managers coach based on memory and intuition, not data from actual conversations. Coaching is inconsistent and hard to scale.</div>
+      </div>
+      <div class="p-card fade-up">
+        <div class="p-icon">❌</div>
+        <div class="p-title">Lost Deals Stay Lost</div>
+        <div class="p-desc">When a deal goes cold, there's no structured process to learn from it before the next contact attempt. The same mistakes get made again.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ SLIDE 3 — THE SOLUTION ══════════ -->
+  <div class="slide" id="s3">
+    <div class="accent-bar"></div>
+    <div class="orb" style="background:var(--teal);width:500px;height:400px;top:-200px;left:50%;transform:translateX(-50%);"></div>
+
+    <div class="label fade-up">The Solution</div>
+    <h2 class="fade-up">SalesIQ: Upload a call.<br><span style="color:var(--cyan)">Get a full AI diagnosis.</span></h2>
+    <p class="sub fade-up">From upload to complete report in under 60 seconds — including PDF download and email delivery.</p>
+
+    <div class="steps">
+      <div class="step fade-up">
+        <div class="step-bar" style="background:var(--cyan);"></div>
+        <div class="step-num" style="color:var(--cyan);">01</div>
+        <div class="step-label">UPLOAD</div>
+        <div class="step-desc">Audio (.mp3/.wav/.m4a) or text transcript (.txt/.pdf). Drag & drop.</div>
+      </div>
+      <div class="step fade-up">
+        <div class="step-bar" style="background:var(--violet);"></div>
+        <div class="step-num" style="color:var(--violet);">02</div>
+        <div class="step-label">ANALYZE</div>
+        <div class="step-desc">AI pipeline runs sequentially in real-time. Watch each step execute live.</div>
+      </div>
+      <div class="step fade-up">
+        <div class="step-bar" style="background:var(--red);"></div>
+        <div class="step-num" style="color:var(--red);">03</div>
+        <div class="step-label">DIAGNOSE</div>
+        <div class="step-desc">Exact failure moments with timestamps, severity ratings, and root causes.</div>
+      </div>
+      <div class="step fade-up">
+        <div class="step-bar" style="background:var(--amber);"></div>
+        <div class="step-num" style="color:var(--amber);">04</div>
+        <div class="step-label">COACH</div>
+        <div class="step-desc">Alternative phrasing for every failure, backed by winning call examples.</div>
+      </div>
+      <div class="step fade-up">
+        <div class="step-bar" style="background:var(--green);"></div>
+        <div class="step-num" style="color:var(--green);">05</div>
+        <div class="step-label">BRIEF</div>
+        <div class="step-desc">Full pre-call briefing doc. Prospect triggers, objections, opening lines.</div>
+      </div>
+    </div>
+
+    <div class="bottom-quote fade-up">"From upload to full AI report in under 60 seconds — including PDF download and email delivery."</div>
+  </div>
+
+  <!-- ══════════ SLIDE 4 — PIPELINE ══════════ -->
+  <div class="slide" id="s4">
+    <div class="accent-bar violet"></div>
+    <div class="orb" style="background:var(--violet);width:400px;height:400px;top:-150px;right:-100px;opacity:.25;"></div>
+
+    <div class="label violet fade-up">The Engine</div>
+    <h2 class="fade-up">AI-Powered Analysis Pipeline</h2>
+    <p class="sub fade-up">5 LLM modules + 1 transcription service + 1 RAG retrieval tool — running in sequence, each passing output to the next.</p>
+
+    <div class="pipeline-grid">
+      <div class="pipe-card fade-up">
+        <div class="pipe-num">#1</div>
+        <div class="pipe-info">
+          <div class="pipe-tag tag-service">SERVICE</div>
+          <h3 style="color:var(--amber)">Transcription Service</h3>
+          <p>Whisper API call — converts audio to timestamped text. <strong style="color:var(--amber)">Not an LLM module.</strong> No reasoning involved.</p>
+        </div>
+      </div>
+      <div class="pipe-card fade-up">
+        <div class="pipe-num">#2</div>
+        <div class="pipe-info">
+          <div class="pipe-tag tag-llm">LLM MODULE</div>
+          <h3 style="color:var(--cyan)">Classifier</h3>
+          <p>LLM identifies call type, extracts rep name, prospect, company, duration, outcome and key topics.</p>
+        </div>
+      </div>
+      <div class="pipe-card fade-up">
+        <div class="pipe-num">#3</div>
+        <div class="pipe-info">
+          <div class="pipe-tag tag-llm">LLM MODULE</div>
+          <h3 style="color:var(--green)">Sentiment & Emotion</h3>
+          <p>LLM produces per-minute sentiment scores, detects mood shifts and engagement level throughout the call.</p>
+        </div>
+      </div>
+      <div class="pipe-card fade-up">
+        <div class="pipe-num">#4</div>
+        <div class="pipe-info">
+          <div class="pipe-tag tag-llm">LLM MODULE</div>
+          <h3 style="color:var(--red)">Diagnostics</h3>
+          <p>LLM identifies exact failure moments with timestamps, severity (critical / major / minor) and root cause category.</p>
+        </div>
+      </div>
+      <div class="pipe-card fade-up">
+        <div class="pipe-num">#5</div>
+        <div class="pipe-info">
+          <div class="pipe-tag tag-llm">LLM MODULE</div>
+          <h3 style="color:var(--amber)">Sales Coach</h3>
+          <p>LLM generates the exact alternative phrasing for each failure, explains why it works, and cites winning call examples.</p>
+        </div>
+      </div>
+      <div class="pipe-card fade-up">
+        <div class="pipe-num">#6</div>
+        <div class="pipe-info">
+          <div class="pipe-tag tag-llm">LLM MODULE</div>
+          <h3 style="color:var(--teal)">Pre-Call Briefing</h3>
+          <p>LLM synthesizes all prior analysis into a full re-engagement strategy: triggers, objections, opening lines, questions.</p>
+        </div>
+      </div>
+      <div class="pipe-card fade-up" style="grid-column:1/-1;">
+        <div class="pipe-num">#7</div>
+        <div class="pipe-info" style="display:flex;align-items:center;gap:20px;flex:1;">
+          <div>
+            <div class="pipe-tag tag-tool">RAG DATA TOOL</div>
+            <h3 style="color:var(--violet)">Knowledge RAG Tool</h3>
+            <p>ChromaDB vector store — embeds and indexes every transcript for semantic search. <strong style="color:var(--violet)">Not an LLM module.</strong> Pure retrieval — no reasoning. Used by the Coach module to surface examples from past winning calls.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ SLIDE 5 — LIVE PROCESSING ══════════ -->
+  <div class="slide" id="s5">
+    <div class="accent-bar cyan"></div>
+
+    <div class="label cyan fade-up">Live Demo</div>
+    <h2 class="fade-up">Real-Time Pipeline Progress</h2>
+    <p class="sub fade-up">WebSocket streaming · Each step updates live · Cannot navigate away during analysis</p>
+
+    <div class="agent-list">
+      <div class="agent-row done fade-up">
+        <div class="a-icon" style="background:rgba(16,185,129,.12);color:var(--green)">✓</div>
+        <div class="a-main">
+          <div class="a-name">#1 Transcription Service</div>
+          <div class="a-desc">Converted 28-min audio to clean timestamped transcript via Whisper API</div>
+        </div>
+        <div class="a-status" style="color:var(--green)">✓ Complete</div>
+      </div>
+      <div class="agent-row done fade-up">
+        <div class="a-icon" style="background:rgba(16,185,129,.12);color:var(--green)">✓</div>
+        <div class="a-main">
+          <div class="a-name">#2 Classifier (LLM)</div>
+          <div class="a-desc">Discovery call · 91% confidence · Dan Reeves @ Acme Corp · 28 min</div>
+        </div>
+        <div class="a-status" style="color:var(--green)">✓ Complete</div>
+      </div>
+      <div class="agent-row done fade-up">
+        <div class="a-icon" style="background:rgba(16,185,129,.12);color:var(--green)">✓</div>
+        <div class="a-main">
+          <div class="a-name">#3 Sentiment & Emotion (LLM)</div>
+          <div class="a-desc">Engagement: Medium · 2 mood shifts detected at 9m and 21m</div>
+        </div>
+        <div class="a-status" style="color:var(--green)">✓ Complete</div>
+      </div>
+      <div class="agent-row running fade-up">
+        <div class="a-icon" style="background:rgba(0,212,255,.12);color:var(--cyan)"><span class="spinner">⟳</span></div>
+        <div class="a-main">
+          <div class="a-name">#4 Diagnostics (LLM)</div>
+          <div class="a-desc">Analyzing failure points and root causes across full transcript…</div>
+          <div style="margin-top:6px;" class="bar-anim">
+            <div class="prog-wrap"><div class="prog-fill" style="width:62%"></div></div>
+          </div>
+        </div>
+        <div class="a-status" style="color:var(--cyan)">⟳ Running</div>
+      </div>
+      <div class="agent-row waiting fade-up">
+        <div class="a-icon" style="background:rgba(255,255,255,.04);color:var(--lgray)">○</div>
+        <div class="a-main"><div class="a-name">#5 Sales Coach (LLM)</div><div class="a-desc">Waiting for diagnostics output…</div></div>
+        <div class="a-status" style="color:var(--lgray)">○ Waiting</div>
+      </div>
+      <div class="agent-row waiting fade-up">
+        <div class="a-icon" style="background:rgba(255,255,255,.04);color:var(--lgray)">○</div>
+        <div class="a-main"><div class="a-name">#6 Pre-Call Briefing (LLM)</div><div class="a-desc">Waiting for coaching output…</div></div>
+        <div class="a-status" style="color:var(--lgray)">○ Waiting</div>
+      </div>
+      <div class="agent-row waiting fade-up">
+        <div class="a-icon" style="background:rgba(255,255,255,.04);color:var(--lgray)">○</div>
+        <div class="a-main"><div class="a-name">#7 RAG Knowledge Tool</div><div class="a-desc">Will index transcript into ChromaDB after analysis completes…</div></div>
+        <div class="a-status" style="color:var(--lgray)">○ Waiting</div>
+      </div>
+    </div>
+
+    <div class="overall-bar fade-up" style="margin-top:10px;">
+      <div class="label-row">
+        <span>Overall Progress</span>
+        <span>3 of 7 steps · ~28 seconds remaining</span>
+      </div>
+      <div class="prog-wrap bar-anim" style="height:8px;">
+        <div class="prog-fill" style="width:43%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ SLIDE 6 — FAILURE ANALYSIS ══════════ -->
+  <div class="slide" id="s6">
+    <div class="accent-bar red"></div>
+    <div class="orb" style="background:var(--red);width:350px;height:350px;bottom:-100px;right:-80px;opacity:.2;"></div>
+
+    <div class="label red fade-up">Results — Failure Analysis</div>
+    <h2 class="fade-up">Exactly where the deal went wrong</h2>
+    <p class="sub fade-up">Every failure pinpointed with timestamp, severity, and a prescriptive coaching response.</p>
+
+    <div class="failure-list">
+      <div class="f-card fade-up">
+        <div class="f-header">
+          <span class="badge red">CRITICAL</span>
+          <span class="f-ts">9:14</span>
+          <span class="f-cat">Premature Pricing Disclosure</span>
+        </div>
+        <div class="f-what">Rep quoted price before establishing any value. Jumped directly to pricing tier when prospect asked about cost, without anchoring ROI or demonstrating business impact first.</div>
+        <div class="f-quote">"So our standard tier starts at $2,400 per month and goes up from there depending on seats."</div>
+        <div class="f-coach"><strong>✦ BETTER APPROACH</strong>Before we talk numbers, let me show you what this looks like for a company your size. Clients in your space typically see a 30–40% reduction in their sales cycle. Once we've established what that's worth to you, pricing becomes a straightforward conversation — want to do a quick ROI exercise first?</div>
+      </div>
+      <div class="f-card fade-up">
+        <div class="f-header">
+          <span class="badge amber">MAJOR</span>
+          <span class="f-ts">16:30</span>
+          <span class="f-cat">Weak Objection Handling</span>
+        </div>
+        <div class="f-what">Rep gave a vague assurance when prospect raised integration concerns instead of providing specific, confidence-building detail about the integration process.</div>
+        <div class="f-quote">"Yeah, we integrate with most things, it's usually not a problem."</div>
+        <div class="f-coach"><strong>✦ BETTER APPROACH</strong>We have a native Salesforce connector that takes about 4 hours to set up — our team handles the first sync. Which CRM are you on? I can walk you through exactly what the integration looks like.</div>
+      </div>
+      <div class="f-card fade-up">
+        <div class="f-header">
+          <span class="badge amber">MAJOR</span>
+          <span class="f-ts">22:05</span>
+          <span class="f-cat">Premature Close Attempt</span>
+        </div>
+        <div class="f-what">Rep attempted to move to contract while the prospect was clearly still unconvinced, creating resistance instead of maintaining the momentum of the conversation.</div>
+        <div class="f-quote">"So should we go ahead and get a contract drafted? I can have something over by Friday."</div>
+        <div class="f-coach"><strong>✦ BETTER APPROACH</strong>Rather than rushing to paperwork, what if we scheduled a 20-minute technical call with your ops team? That way when we do move to contract, there are no surprises on either side.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ SLIDE 7 — PRE-CALL BRIEFING ══════════ -->
+  <div class="slide" id="s7">
+    <div class="accent-bar green"></div>
+    <div class="orb" style="background:var(--green);width:400px;height:400px;top:-150px;right:-100px;opacity:.2;"></div>
+
+    <div class="label green fade-up">Results — Pre-Call Briefing</div>
+    <h2 class="fade-up">Full prep sheet for re-engaging<br><span style="color:var(--green)">the same prospect</span></h2>
+
+    <div class="brief-grid">
+      <div class="b-card fade-up">
+        <div class="b-title" style="color:var(--cyan)">Recommended Approach</div>
+        <div style="font-size:12px;color:var(--gray);line-height:1.7;">This prospect is analytically driven and risk-averse. Lead with specifics: exact integration steps, named reference customers in their industry, and a concrete ROI model. Open with acknowledgment of previous concerns. Avoid vague assurances at all costs.</div>
+      </div>
+      <div class="b-card fade-up">
+        <div class="b-title" style="color:var(--violet)">Prospect Triggers</div>
+        <div class="b-item"><div class="b-dot" style="background:var(--violet)"></div>ROI clarity — they want to see numbers before committing</div>
+        <div class="b-item"><div class="b-dot" style="background:var(--violet)"></div>Integration simplicity — lean IT team, fear added complexity</div>
+        <div class="b-item"><div class="b-dot" style="background:var(--violet)"></div>Peer validation — responds well to reference customers in their space</div>
+        <div class="b-item"><div class="b-dot" style="background:var(--violet)"></div>Timeline control — wants to drive the pace, not be pushed</div>
+      </div>
+      <div class="b-card fade-up">
+        <div class="b-title" style="color:var(--amber)">Objections to Expect</div>
+        <div style="margin-bottom:10px;">
+          <div class="b-obj">💬 "The price is too high for our current budget"</div>
+          <div class="b-resp">→ Flip to ROI: "If we can cut your deal cycle by 3 weeks, what's that worth per quarter? Let's make sure the math works for you before we talk price."</div>
+        </div>
+        <div>
+          <div class="b-obj">💬 "We're already integrated with another tool"</div>
+          <div class="b-resp">→ "We built a migration path specifically for that — 48-hour cutover, no data loss. Can I connect you with someone who made that switch 6 months ago?"</div>
+        </div>
+      </div>
+      <div class="b-card fade-up">
+        <div class="b-title" style="color:var(--green)">Opening Lines</div>
+        <div class="b-quote">"Hi [Name], I wanted to follow up and acknowledge that I jumped too quickly to pricing in our last call — I'd like to start fresh with the actual business impact."</div>
+        <div class="b-quote">"Since we last spoke, I put together a quick ROI model based on what you shared — 3 minutes to walk through it?"</div>
+        <div class="b-title" style="color:var(--green);margin-top:10px;">Questions to Ask</div>
+        <div class="b-item"><div class="b-dot" style="background:var(--green)"></div>If the integration concern was off the table, what would it take for this to be a yes?</div>
+        <div class="b-item"><div class="b-dot" style="background:var(--green)"></div>Who else on your team would be impacted — should we loop them in?</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ SLIDE 8 — TECH STACK ══════════ -->
+  <div class="slide" id="s8">
+    <div class="accent-bar"></div>
+
+    <div class="label fade-up">Tech Stack</div>
+    <h2 class="fade-up">Production-grade · Single Docker container · One URL</h2>
+
+    <div class="tech-grid">
+      <div class="t-col fade-up">
+        <div class="t-header" style="color:var(--cyan)">Frontend</div>
+        <div class="t-item">React 18 + Vite</div>
+        <div class="t-item">React Router v6</div>
+        <div class="t-item">Tailwind CSS</div>
+        <div class="t-item">Framer Motion</div>
+        <div class="t-item">Recharts (sentiment)</div>
+        <div class="t-item">React Dropzone</div>
+        <div class="t-item">TanStack Query</div>
+        <div class="t-item">Axios · jsPDF</div>
+      </div>
+      <div class="t-col fade-up">
+        <div class="t-header" style="color:var(--violet)">Backend</div>
+        <div class="t-item">Python 3.11 + FastAPI</div>
+        <div class="t-item">WebSocket (real-time)</div>
+        <div class="t-item">SQLite + SQLAlchemy</div>
+        <div class="t-item">ReportLab (PDF)</div>
+        <div class="t-item">aiosmtplib (email)</div>
+        <div class="t-item">ChromaDB (RAG)</div>
+        <div class="t-item">OpenAI Whisper</div>
+        <div class="t-item">pydantic-settings</div>
+      </div>
+      <div class="t-col fade-up">
+        <div class="t-header" style="color:var(--green)">LLM Providers</div>
+        <div class="t-item">OpenAI GPT-4o</div>
+        <div class="t-item">Anthropic Claude 3.5</div>
+        <div class="t-item">Ollama (local)</div>
+        <div class="t-item">Mock (demo mode)</div>
+        <div class="t-item">Model-agnostic layer</div>
+        <div class="t-item">sentence-transformers</div>
+        <div class="t-item">&nbsp;</div>
+        <div class="t-item">&nbsp;</div>
+      </div>
+      <div class="t-col fade-up">
+        <div class="t-header" style="color:var(--amber)">Deployment</div>
+        <div class="t-item">Docker (single image)</div>
+        <div class="t-item">Render.com deploy</div>
+        <div class="t-item">render.yaml config</div>
+        <div class="t-item">docker-compose.yml</div>
+        <div class="t-item">Multi-stage build</div>
+        <div class="t-item">Persistent disk</div>
+        <div class="t-item">FastAPI serves React</div>
+        <div class="t-item">One URL · One service</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ SLIDE 9 — ARCHITECTURE ══════════ -->
+  <div class="slide" id="s9">
+    <div class="accent-bar violet"></div>
+
+    <div class="label violet fade-up">Architecture</div>
+    <h2 class="fade-up">Single Container · Single URL · Full Stack</h2>
+
+    <div class="arch-wrap">
+      <div class="docker-box fade-up">
+        <div class="docker-label">🐳 Docker Container — Render.com</div>
+        <div class="arch-row">
+          <div class="arch-box" style="border-color:var(--cyan);">
+            <h3 style="color:var(--cyan)">React 18 + Vite</h3>
+            <p>Landing · Upload<br>Processing · Results<br>History · Knowledge Base<br>Settings</p>
+            <div style="margin-top:10px;font-size:10px;color:var(--lgray);">Static build served by FastAPI</div>
+          </div>
+          <div class="arch-arrow">◄ HTTP / WS ►</div>
+          <div class="arch-box" style="border-color:var(--violet);">
+            <h3 style="color:var(--violet)">FastAPI Backend</h3>
+            <p>REST API /api/*<br>WebSocket /ws/*<br>Pipeline Orchestrator<br>PDF · Email services</p>
+          </div>
+          <div class="arch-arrow" style="font-size:14px;writing-mode:vertical-rl;transform:rotate(180deg);color:var(--lgray);">calls</div>
+          <div class="arch-box" style="border-color:var(--amber);flex:.8;">
+            <h3 style="color:var(--amber)">LLM Layer</h3>
+            <p>OpenAI GPT-4o<br>Anthropic Claude<br>Ollama (local)<br>Mock (demo)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-row fade-up">
+        <div class="data-box" style="border-color:var(--cyan);">
+          <h3 style="color:var(--cyan)">Whisper API</h3>
+          <p>Audio → transcript</p>
+        </div>
+        <div class="data-box" style="border-color:var(--violet);">
+          <h3 style="color:var(--violet)">ChromaDB</h3>
+          <p>RAG vector store</p>
+        </div>
+        <div class="data-box" style="border-color:var(--green);">
+          <h3 style="color:var(--green)">SQLite</h3>
+          <p>Call metadata</p>
+        </div>
+        <div class="data-box" style="border-color:var(--amber);">
+          <h3 style="color:var(--amber)">ReportLab</h3>
+          <p>PDF generation</p>
+        </div>
+        <div class="data-box" style="border-color:var(--teal);">
+          <h3 style="color:var(--teal)">aiosmtplib</h3>
+          <p>Async email</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ SLIDE 10 — NEXT STEPS ══════════ -->
+  <div class="slide" id="s10">
+    <div class="accent-bar"></div>
+    <div class="orb" style="background:var(--teal);width:500px;height:400px;bottom:-200px;left:50%;transform:translateX(-50%);opacity:.2;"></div>
+
+    <div class="label fade-up">Next Steps</div>
+    <h2 class="fade-up">From POC to Production</h2>
+
+    <div class="ns-grid">
+      <div class="ns-card fade-up">
+        <div class="ns-num" style="color:var(--cyan)">1</div>
+        <div class="ns-body">
+          <h3>Deploy Today (Demo Mode)</h3>
+          <p>Set <span class="mono" style="color:var(--cyan);font-size:11px;">LLM_PROVIDER=mock</span>, run <span class="mono" style="color:var(--cyan);font-size:11px;">docker-compose up</span>. Full working demo at localhost:8000 — no API keys needed. Instant realistic responses.</p>
+        </div>
+      </div>
+      <div class="ns-card fade-up">
+        <div class="ns-num" style="color:var(--green)">2</div>
+        <div class="ns-body">
+          <h3>Connect a Real LLM</h3>
+          <p>Add <span class="mono" style="color:var(--green);font-size:11px;">OPENAI_API_KEY</span> or <span class="mono" style="color:var(--green);font-size:11px;">ANTHROPIC_API_KEY</span> in <span class="mono" style="color:var(--green);font-size:11px;">.env</span>. Switch <span class="mono" style="color:var(--green);font-size:11px;">LLM_PROVIDER=openai</span>. Start processing Dan's real calls immediately.</p>
+        </div>
+      </div>
+      <div class="ns-card fade-up">
+        <div class="ns-num" style="color:var(--violet)">3</div>
+        <div class="ns-body">
+          <h3>Train on Existing Data</h3>
+          <p>Upload Dan's existing call recordings. The Knowledge RAG tool indexes every call — the knowledge base gets smarter with each analysis. Winning patterns surface automatically.</p>
+        </div>
+      </div>
+      <div class="ns-card fade-up">
+        <div class="ns-num" style="color:var(--amber)">4</div>
+        <div class="ns-body">
+          <h3>Deploy to Render.com</h3>
+          <p>Push to GitHub → connect to Render.com → <span class="mono" style="color:var(--amber);font-size:11px;">render.yaml</span> handles everything. Single URL, single service. No multi-deployment complexity.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta fade-up">"SalesIQ is built and ready. Let's show Dan exactly what his calls have been telling him."</div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- ── NAVIGATION ── -->
+<div class="nav">
+  <button class="nav-btn" id="btnPrev" onclick="navigate(-1)" disabled>&#8592;</button>
+  <div class="dots" id="dots"></div>
+  <span class="slide-counter" id="counter">1 / 10</span>
+  <button class="nav-btn" id="btnNext" onclick="navigate(1)">&#8594;</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total  = slides.length;
+  let current  = 0;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= total) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    setTimeout(() => slides[idx - 1 < 0 ? 0 : idx - 1]?.classList.remove('exit'), 500);
+
+    // Remove exit from previous
+    slides.forEach(s => { if (s !== slides[idx]) s.classList.remove('exit'); });
+
+    const prev = current;
+    current = idx;
+    slides[prev].classList.remove('active');
+    slides[prev].classList.add('exit');
+    slides[current].classList.add('active');
+
+    setTimeout(() => slides[prev].classList.remove('exit'), 500);
+
+    // Update dots
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+
+    // Counter
+    document.getElementById('counter').textContent = `${current + 1} / ${total}`;
+    document.getElementById('btnPrev').disabled = current === 0;
+    document.getElementById('btnNext').disabled = current === total - 1;
+
+    // Trigger counter animation on slide 1
+    if (current === 0) animateCounters();
+  }
+
+  function navigate(dir) { goTo(current + dir); }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') navigate(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                     navigate(-1);
+  });
+
+  // Animated counters for slide 1
+  function animateCounters() {
+    animateNum('cnt1', 247, '+');
+    animateNum('cnt2', 1840, '+');
+    animateNum('cnt3', 94, '%');
+  }
+  function animateNum(id, target, suffix) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let start = null;
+    const duration = 1400;
+    function step(ts) {
+      if (!start) start = ts;
+      const progress = Math.min((ts - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(eased * target).toLocaleString() + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // Run on load
+  animateCounters();
+</script>
+</body>
+</html>
