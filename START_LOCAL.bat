@@ -23,7 +23,8 @@ if errorlevel 1 (
 
 REM ── Install backend deps (first run only) ────
 echo [1/3] Installing backend dependencies...
-pip install -r backend\requirements.txt --quiet
+echo       (Using requirements-local.txt — skips heavy ML libs not needed for mock AI)
+pip install -r backend\requirements-local.txt --quiet
 if errorlevel 1 (
     echo [ERROR] Backend install failed.
     pause & exit /b 1
