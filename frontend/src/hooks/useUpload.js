@@ -44,7 +44,8 @@ export default function useUpload() {
       fd.append('file', file)
       Object.entries(metadata).forEach(([k, v]) => { if (v) fd.append(k, v) })
 
-      const { data } = await api.post('/api/calls/upload', fd, {
+      // NOTE: api instance already has baseURL='/api', so route must NOT repeat /api
+      const { data } = await api.post('/calls/upload', fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (e) => {
           const pct = Math.round((e.loaded / e.total) * 100)
