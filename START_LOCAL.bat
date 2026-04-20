@@ -21,17 +21,22 @@ if errorlevel 1 (
     pause & exit /b 1
 )
 
-REM ── Install backend deps (first run only) ────
+REM ── Pull latest code ─────────────────────────
+echo [0/3] Pulling latest code from GitHub...
+git pull
+echo       Done.
+
+REM ── Install backend deps ─────────────────────
 echo [1/3] Installing backend dependencies...
-echo       (Using requirements-local.txt — skips heavy ML libs not needed for mock AI)
-pip install -r backend\requirements-local.txt --quiet
+echo       (Using requirements-local.txt with pre-built wheels only)
+pip install -r backend\requirements-local.txt --prefer-binary --quiet
 if errorlevel 1 (
     echo [ERROR] Backend install failed.
     pause & exit /b 1
 )
 echo       Done.
 
-REM ── Install frontend deps (first run only) ───
+REM ── Install frontend deps ────────────────────
 echo [2/3] Installing frontend dependencies...
 cd frontend
 call npm install --silent
@@ -54,7 +59,7 @@ echo   Frontend    : http://localhost:5173
 echo   API Docs    : http://localhost:8000/docs
 echo.
 echo   Using MOCK AI (no API key needed)
-echo   To use real Claude AI set LLM_PROVIDER=claude and ANTHROPIC_API_KEY
+echo   To use real Claude AI: set LLM_PROVIDER=claude and ANTHROPIC_API_KEY
 echo.
 echo ============================================
 echo   Press Ctrl+C in each window to stop
