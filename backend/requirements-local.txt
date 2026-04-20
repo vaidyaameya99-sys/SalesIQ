@@ -1,5 +1,5 @@
 # Minimal requirements for local dev/testing with mock AI (Python 3.13 compatible)
-# Skips chromadb + sentence-transformers which require Python <=3.11 to build
+# Skips chromadb + sentence-transformers which require a C compiler to build
 
 fastapi==0.109.2
 uvicorn[standard]==0.27.1
@@ -9,7 +9,7 @@ pydantic==2.6.1
 pydantic-settings==2.2.1
 sqlalchemy==2.0.27
 aiosqlite==0.20.0
-greenlet==3.0.3
+greenlet>=3.1.0
 
 # LLM
 openai>=1.12.0
