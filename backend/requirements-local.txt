@@ -1,14 +1,15 @@
-# Minimal requirements for local dev/testing with mock AI (Python 3.13 compatible)
-# Skips chromadb + sentence-transformers which require a C compiler to build
+# Local dev requirements — Python 3.13 compatible
+# Uses >= pins so pip installs latest pre-built wheels (no compilation needed)
+# Skips chromadb + sentence-transformers (not needed for mock AI mode)
 
-fastapi==0.109.2
-uvicorn[standard]==0.27.1
-python-multipart==0.0.9
-websockets==12.0
-pydantic==2.6.1
-pydantic-settings==2.2.1
-sqlalchemy==2.0.27
-aiosqlite==0.20.0
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.9
+websockets>=12.0
+pydantic>=2.6.0
+pydantic-settings>=2.2.0
+sqlalchemy>=2.0.27
+aiosqlite>=0.20.0
 greenlet>=3.1.0
 
 # LLM
@@ -16,10 +17,10 @@ openai>=1.12.0
 anthropic>=0.18.1
 
 # PDF generation
-reportlab==4.1.0
+reportlab>=4.0.0
 
 # Email
-aiosmtplib==3.0.1
+aiosmtplib>=3.0.0
 
 # Utilities
-python-dotenv==1.0.1
+python-dotenv>=1.0.0
