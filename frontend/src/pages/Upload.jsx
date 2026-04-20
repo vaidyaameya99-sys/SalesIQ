@@ -25,7 +25,7 @@ function formatBytes(bytes) {
 }
 
 export default function Upload() {
-  const { file, uploading, uploadPct, error, onDrop, submit, clearFile } = useUpload()
+  const { file, uploading, uploadPct, warmingUp, warmSecs, error, onDrop, submit, clearFile } = useUpload()
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -117,17 +117,40 @@ export default function Upload() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="absolute inset-0 rounded-2xl bg-dark-800/80 flex flex-col items-center justify-center gap-3"
+                className="absolute inset-0 rounded-2xl bg-dark-800/90 flex flex-col items-center justify-center gap-3 px-6"
               >
                 <Loader2 size={28} className="text-accent-cyan animate-spin" />
-                <p className="text-white font-medium text-sm">Uploading… {uploadPct}%</p>
-                <div className="w-48 h-1.5 bg-dark-600 rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full bg-gradient-to-r from-brand-600 to-accent-cyan"
-                    animate={{ width: `${uploadPct}%` }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </div>
+
+                {warmingUp ? (
+                  <>
+                    <p className="text-white font-semibold text-sm text-center">
+                      ☕ Server is waking up… {warmSecs}s
+                    </p>
+                    <p className="text-gray-400 text-xs text-center leading-relaxed">
+                      Free hosting spins down when idle.<br/>This takes up to 60 seconds — hang tight!
+                    </p>
+                    <div className="w-48 h-1.5 bg-dark-600 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-gradient-to-r from-amber-500 to-accent-cyan"
+                        animate={{ width: `${Math.min((warmSecs / 60) * 100, 95)}%` }}
+                        transition={{ duration: 0.8 }}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-white font-medium text-sm">
+                      {uploadPct > 0 ? `Uploading… ${uploadPct}%` : 'Connecting to server…'}
+                    </p>
+                    <div className="w-48 h-1.5 bg-dark-600 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-gradient-to-r from-brand-600 to-accent-cyan"
+                        animate={{ width: uploadPct > 0 ? `${uploadPct}%` : '15%' }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </div>
+                  </>
+                )}
               </motion.div>
             )}
           </div>
