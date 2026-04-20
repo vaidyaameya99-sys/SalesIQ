@@ -7,7 +7,9 @@ COPY frontend/package.json ./
 RUN npm install
 
 COPY frontend/ ./
-RUN npm run build
+# Force empty VITE_API_URL so all API calls use relative paths (same-origin Docker deploy)
+# This overrides any .env.production value or inherited build-time variable
+RUN VITE_API_URL="" npm run build
 # Output lands in /app/frontend/dist (per vite.config.js outDir)
 
 # ── Stage 2: Python backend ────────────────────────────────────────────────────
@@ -40,4 +42,4 @@ ENV PORT=8000
 
 EXPOSE 8000
 
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
