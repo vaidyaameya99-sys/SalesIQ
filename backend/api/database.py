@@ -11,8 +11,9 @@ AsyncSessionLocal = async_sessionmaker(
 )
 
 async def init_db():
+    """Create all tables if they don't already exist. Safe to call on every startup."""
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(lambda sync_conn: Base.metadata.create_all(sync_conn, checkfirst=True))
 
 async def get_db():
     async with AsyncSessionLocal() as session:
