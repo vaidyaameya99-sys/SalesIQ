@@ -31,6 +31,8 @@ async def index_call(call_id: str, transcript: str, metadata: dict):
     """Embed and store transcript chunks in ChromaDB."""
     try:
         collection = await get_chroma_collection()
+        if collection is None:
+            return  # ChromaDB not available (e.g. local dev without chromadb installed)
         chunks     = _chunk_transcript(transcript, call_id)
         if not chunks:
             return
@@ -55,6 +57,8 @@ async def search(query: str, n_results: int = 8, filters: dict = None) -> list[d
     """Semantic search across all indexed calls."""
     try:
         collection = await get_chroma_collection()
+        if collection is None:
+            return []  # ChromaDB not available (e.g. local dev without chromadb installed)
         where = {}
         if filters:
             if filters.get("call_type"):
@@ -85,7 +89,7 @@ async def search(query: str, n_results: int = 8, filters: dict = None) -> list[d
                     "rep_name":        meta.get("rep_name"),
                     "company":         meta.get("company"),
                     "timestamp":       meta.get("timestamp"),
-                    "relevance_score": round(1 - dist, 3),   # cosine → similarity
+                    "relevance_score": round(1 - dist, 3),   # cosine -> similarity
                 })
         return sorted(output, key=lambda x: x["relevance_score"], reverse=True)
     except Exception as e:
